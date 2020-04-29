@@ -1,0 +1,185 @@
+{
+  "project_info": {
+    "project_number": "363528690386",
+    "firebase_url": "https://myapps-1542146686995.firebaseio.com",
+    "project_id": "myapps-1542146686995",
+    "storage_bucket": "myapps-1542146686995.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363528690386:android:5a49931954d363d98fab0b",
+        "android_client_info": {
+          "package_name": "com.bo.myapps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "363528690386-tif2r21enid2gjpvgfbjp4168f1fv09c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp6pu2vgDCh9njDGoFOW_eOu6BvUtgc_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "363528690386-tif2r21enid2gjpvgfbjp4168f1fv09c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363528690386:android:124e86a9b47000318fab0b",
+        "android_client_info": {
+          "package_name": "com.example.curso1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "363528690386-tif2r21enid2gjpvgfbjp4168f1fv09c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp6pu2vgDCh9njDGoFOW_eOu6BvUtgc_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "363528690386-tif2r21enid2gjpvgfbjp4168f1fv09c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363528690386:android:f9106699d8bda0f48fab0b",
+        "android_client_info": {
+          "package_name": "com.example.myappinformativa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "363528690386-tif2r21enid2gjpvgfbjp4168f1fv09c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp6pu2vgDCh9njDGoFOW_eOu6BvUtgc_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "363528690386-tif2r21enid2gjpvgfbjp4168f1fv09c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363528690386:android:650d56e03fb35be78fab0b",
+        "android_client_info": {
+          "package_name": "com.herprogramacion.carinsurance"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "363528690386-tif2r21enid2gjpvgfbjp4168f1fv09c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp6pu2vgDCh9njDGoFOW_eOu6BvUtgc_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "363528690386-tif2r21enid2gjpvgfbjp4168f1fv09c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363528690386:android:60522d4325c7e3708fab0b",
+        "android_client_info": {
+          "package_name": "com.myapps.myappinformativa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "363528690386-tif2r21enid2gjpvgfbjp4168f1fv09c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp6pu2vgDCh9njDGoFOW_eOu6BvUtgc_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "363528690386-tif2r21enid2gjpvgfbjp4168f1fv09c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363528690386:android:a4092d610025b4068fab0b",
+        "android_client_info": {
+          "package_name": "tech.alvarez.noticias"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "363528690386-tif2r21enid2gjpvgfbjp4168f1fv09c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBp6pu2vgDCh9njDGoFOW_eOu6BvUtgc_Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "363528690386-tif2r21enid2gjpvgfbjp4168f1fv09c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
