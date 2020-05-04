@@ -8,8 +8,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="myapps"
-        android:icon="@mipmap/ic_launcher">
+        android:label="My apps"
+        android:icon="@mipmap/ic_my_apps">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

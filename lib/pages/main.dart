@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:myapps/add_vehicle.dart';
-import 'package:myapps/home_page.dart';
-import 'package:myapps/root_page.dart';
+import 'package:myapps/constants.dart';
+import 'package:myapps/pages/add_vehicle.dart';
+import 'package:myapps/pages/home_page.dart';
+import 'package:myapps/pages/root_page.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
 
-  Map<int, Color> colorMap = {
+  final Map<int, Color> colorMap = {
     50: Color.fromRGBO(147, 205, 72, .1),
     100: Color.fromRGBO(147, 205, 72, .2),
     200: Color.fromRGBO(147, 205, 72, .3),
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: MaterialColor(0xFF06377A, colorMap),
+        primarySwatch: MaterialColor(colorPrimary, colorMap),
         accentColor: Color(0xFFD81B60)
       ),
       home: RootPage(),

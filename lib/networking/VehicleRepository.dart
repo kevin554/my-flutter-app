@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:myapps/constants.dart';
 import 'package:myapps/networking/ApiProvider.dart';
 
 
@@ -7,22 +8,22 @@ class VehicleRepository {
   ApiProvider _provider = ApiProvider();
 
   Future fetchVehicles() async {
-    final response = await _provider.get('consultas/v1/vehicles');
+    final response = await _provider.get(urlServices + 'consultas/v1/vehicles');
     return response;
   }
 
   Future fetchCities() async {
-    final response = await _provider.get('consultas/v1/cities');
+    final response = await _provider.get(urlServices + 'consultas/v1/cities');
     return response;
   }
 
   Future fetchTypes() async {
-    final response = await _provider.get('consultas/v1/vehicle_types');
+    final response = await _provider.get(urlServices + 'consultas/v1/vehicle_types');
     return response;
   }
 
   Future fetchClasses() async {
-    final response = await _provider.get('consultas/v1/vehicle_classes');
+    final response = await _provider.get(urlServices + 'consultas/v1/vehicle_classes');
     return response;
   }
 
@@ -39,7 +40,17 @@ class VehicleRepository {
     params['tipo_vehiculo_id'] = typeId;
     params['imagenes'] = '[0]';
 
-    final response = await _provider.post('consultas/v1/save_vehicle', params);
+    final response = await _provider.dioPost(urlServices + 'consultas/v1/save_vehicle', params);
+    return response;
+  }
+
+  Future login(username, password) async {
+    var body = {
+      'login': username,
+      'password': password
+    };
+
+    final response = await _provider.post(urlAuth + 'rest/api/auth/login', body);
     return response;
   }
 

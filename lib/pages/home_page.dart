@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:myapps/first_fragment.dart';
-import 'package:myapps/vehicles_fragment.dart';
+import 'package:myapps/pages/first_fragment.dart';
+import 'package:myapps/pages/vehicles_fragment.dart';
+import 'package:myapps/shared_preferences_helper.dart';
 
 class HomePage extends StatefulWidget {
 
@@ -40,6 +39,7 @@ class _HomePageState extends State<HomePage> {
 
   signOut() async {
     try {
+      await SharedPreferencesHelper.saveUser(null);
       widget.logoutCallback();
     } catch (e) {
       print(e);

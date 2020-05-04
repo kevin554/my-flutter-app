@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:myapps/constants.dart';
 import 'package:myapps/networking/VehicleRepository.dart';
 
 
@@ -55,7 +56,7 @@ class _VehiclesFragment extends State<VehiclesFragment> {
                 ),
                 trailing: Text(
                   _vehiclesList[index]['placa'],
-                  style: TextStyle(color: Color(0xFF06377A)),
+                  style: TextStyle(color: Color(colorPrimary)),
                 ),
                 onTap: (){
                   Navigator.of(context).pushNamed('/add_vehicle', arguments: {"list": _vehiclesList, "i": index});

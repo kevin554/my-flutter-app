@@ -1,7 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:myapps/home_page.dart';
-import 'package:myapps/login_signup.dart';
+import 'package:myapps/pages/home_page.dart';
+import 'package:myapps/pages/login.dart';
+import 'package:myapps/shared_preferences_helper.dart';
 
 enum AuthStatus {
   NOT_DETERMINED,
@@ -47,8 +48,14 @@ class _RootPageState extends State<RootPage> {
       print("Push Messaging token: $token");
     });
 
+    checkLogin();
+  }
+
+  checkLogin() async {
+    var user = await SharedPreferencesHelper.getUser();
+
     setState(() {
-      authStatus = AuthStatus.LOGGED_IN;
+      authStatus = user != null ? AuthStatus.LOGGED_IN : AuthStatus.NOT_LOGGED_IN;
     });
   }
 
@@ -96,7 +103,7 @@ class _RootPageState extends State<RootPage> {
         break;
 
       case AuthStatus.NOT_LOGGED_IN:
-        return new LoginSignupPage(
+        return new LoginPage(
           loginCallback: loginCallback,
         );
         break;

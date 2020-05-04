@@ -8,13 +8,11 @@ import 'package:myapps/networking/CustomException.dart';
 
 class ApiProvider {
 
-  final String _baseUrl = "http://192.168.0.14:8089/rl-servicios/";
-
   Future<dynamic> get(String url) async {
     var responseJson;
 
     try {
-      final response = await http.get(_baseUrl + url);
+      final response = await http.get(url);
       responseJson = _response(response);
     } on SocketException {
       throw FetchDataException('No Internet connection');
@@ -23,13 +21,26 @@ class ApiProvider {
     return responseJson;
   }
 
-  Future<dynamic> post(String url, params) async {
+  Future<dynamic> post(String url, body) async {
+    var responseJson;
+
+    try {
+      final response = await http.post(url, body: body);
+      responseJson = _response(response);
+    } on SocketException {
+      throw FetchDataException('No Internet connection');
+    }
+
+    return responseJson;
+  }
+
+  Future<dynamic> dioPost(String url, params) async {
     var responseJson;
     var dio = Dio();
     FormData formData = FormData.fromMap(params);
 
     try {
-      final response = await dio.post(_baseUrl + url, data: formData);
+      final response = await dio.post(url, data: formData);
       responseJson = _dioResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet connection');
@@ -41,9 +52,11 @@ class ApiProvider {
   dynamic _response(/*http.Response */response) {
     switch (response.statusCode) {
       case 200:
+      case 202:
         var responseJson = json.decode(response.body.toString());
         print(responseJson);
         return responseJson;
+
       case 400:
         throw BadRequestException(response.body.toString());
       case 401:
