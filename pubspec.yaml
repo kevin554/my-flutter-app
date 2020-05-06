@@ -14,7 +14,7 @@ description: A new Flutter application.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.3.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -28,6 +28,7 @@ dependencies:
   firebase_core: ^0.4.4+3  # add dependency for Firebase Core
   firebase_messaging: ^6.0.13
   shared_preferences: 0.5.7
+  image_picker: 0.6.6+1
 
 dev_dependencies:
   flutter_test:

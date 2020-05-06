@@ -1,6 +1,8 @@
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:myapps/networking/VehicleRepository.dart';
 
 
@@ -15,6 +17,7 @@ class AddVehiclePage extends StatefulWidget {
 
 class _AddVehiclePageState extends State<AddVehiclePage> {
 
+  var _images = new List();
   var _vehiclesList;
   var _vehicleObj;
   var index;
@@ -35,6 +38,8 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
 
   @override
   void initState() {
+    _images.add({});
+
     fetchCities();
     fetchClasses();
     fetchTypes();
@@ -130,23 +135,22 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
   }
 
   Widget _showForm() {
-    return new Container(
-        padding: EdgeInsets.all(16.0),
-        child: new Form(
-          key: _formKey,
-          child: new ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              showClassDropdown(),
-              showTypeDropdown(),
-              showBrandInput(),
-              showLicensePlateInput(),
-              showModelInput(),
-              showColorInput(),
-              showCityDropdown(),
-            ],
-          ),
-        ));
+    return Form(
+      key: _formKey,
+      child: ListView(
+        shrinkWrap: true,
+        children: <Widget>[
+          showClassDropdown(),
+          showTypeDropdown(),
+          showBrandInput(),
+          showLicensePlateInput(),
+          showModelInput(),
+          showColorInput(),
+          showCityDropdown(),
+          showImagePicker(),
+        ],
+      ),
+    );
   }
 
   Widget showBrandInput() {
@@ -339,6 +343,86 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
         )
       )
     );
+  }
+
+  Widget showImagePicker() {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                  'Fotos',
+                  style: TextStyle(color: Color(0xFF263238), fontSize: 22)
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 5),
+                child: Text(
+                  'Carge las imágenes una por una',
+                  style: TextStyle(color: Color(0xFF666666), fontSize: 14)
+                )
+              ),
+              Container(
+                  margin: const EdgeInsets.only(top: 10),
+                  child: SizedBox(
+                      height: 90,
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: _images.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Stack(
+                                alignment: Alignment.topRight,
+                                children: <Widget>[
+                                  Container(
+                                    margin: const EdgeInsets.only(right: 5),
+                                    child: FlatButton(
+                                      child: getImageWidget(index),
+                                      padding: EdgeInsets.all(0),
+                                      onPressed: takePicture
+                                    ),
+                                  ),
+                                  if (index != _images.length - 1)
+                                    IconButton(
+                                      icon: Icon(Icons.clear),
+                                      onPressed: () => removeImage(index)
+                                    )
+                                ]
+                            );
+                          }
+                      )
+                  )
+              )
+            ]
+        ),
+      ),
+    );
+  }
+
+  Widget getImageWidget(index) {
+    if (index == (_images.length - 1)) {
+      return Image(image:AssetImage('assets/add-black.png'), width: 90, height: 90);
+    }
+
+    return Image.file(_images[index], width: 90, height: 90);
+  }
+
+  removeImage(index) {
+    setState(() {
+      _images.removeAt(index);
+    });
+  }
+
+  Future takePicture() async {
+    var image = await ImagePicker.pickImage(source: ImageSource.camera);
+
+    if (image != null) {
+      setState(() {
+        _images.insert(0, image);
+      });
+    }
   }
 
   Future saveVehicle() async {
