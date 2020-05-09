@@ -20,7 +20,9 @@ class SharedPreferencesHelper {
 
   static getUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.get(_kUserCode);
+    final userStr = prefs.get(_kUserCode);
+
+    return userStr != null ? json.decode(userStr) : userStr;
   }
 
 }

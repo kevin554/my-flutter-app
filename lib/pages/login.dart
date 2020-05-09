@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapps/constants.dart';
-import 'package:myapps/networking/VehicleRepository.dart';
+import 'package:myapps/networking/ApiRepository.dart';
 import 'package:myapps/shared_preferences_helper.dart';
 
 
@@ -14,36 +14,21 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
   final _formKey = new GlobalKey<FormState>();
-  VehicleRepository vehicleRepository = VehicleRepository();
+  ApiRepository apiRepository = ApiRepository();
 
   String _username;
   String _password;
-  String _errorMessage;
-
-  // Initially password is obscure
-  bool _obscureText = true;
-
+  bool _obscureText = true; // Initially password is obscure
   bool _isLoading;
 
-  // Check if form is valid before perform login or signup
-  bool validateAndSave() {
-    final form = _formKey.currentState;
-    if (form.validate()) {
-      form.save();
-      return true;
-    }
-    return false;
-  }
-
-  // Toggles the password show status
   void showHidePassword() {
     setState(() {
       _obscureText = !_obscureText;
     });
   }
 
-  // Perform login or signup
   void validateAndSubmit() async {
     if (!_formKey.currentState.validate()) {
       return;
@@ -51,16 +36,15 @@ class _LoginPageState extends State<LoginPage> {
 
     _formKey.currentState.save();
 
-//    setState(() {
-//      _errorMessage = "";
-//      _isLoading = true;
-//    });
+    setState(() {
+      _isLoading = true;
+    });
 
-    var response = await login();
+    var response = await apiRepository.login(_username, _password);
 
-//    setState(() {
-//      _isLoading = false;
-//    });
+    setState(() {
+      _isLoading = false;
+    });
 
     if (response != null && isSuccessful(response['response'])) {
       var user = response['data'];
@@ -70,238 +54,155 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  @override
-  void initState() {
-    _errorMessage = "";
-    _isLoading = false;
-    super.initState();
-  }
-
-  void resetForm() {
-    _formKey.currentState.reset();
-    _errorMessage = "";
-  }
-
-  void toggleFormMode() {
-    resetForm();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      backgroundColor: Colors.grey,
-      body: Stack( children: <Widget>[
-        Container(
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                flex: 35, // 30% of space => (3/(3 + 7))
-                child: Container(
-                  color: Color(colorPrimary),
-                ),
-              ),
-              Expanded(
-                flex: 65, // 70% of space
-                child: Container(
-                  color: Color(0xFFe6e6e6),
-                ),
-              ),
-            ],
-          )
-        ),
-
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            showLogo(),
-            _showForm(),
-            // _showCircularProgress(),
-          ],
-        )
-      ])
-    );
-  }
-
   Widget _showCircularProgress() {
     if (_isLoading) {
       return Center(child: CircularProgressIndicator());
     }
+
     return Container(
       height: 0.0,
       width: 0.0,
     );
   }
 
-  Widget _showForm() {
-    return Card(
-      margin: const EdgeInsets.all(20),
-      // This ensures that the Card's children (including the ink splash) are clipped correctly.
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Container(
-              padding: EdgeInsets.all(16),
-              child: new Form(
-                key: _formKey,
-                child: new ListView(
-                  shrinkWrap: true,
-                  children: <Widget>[
-                    Padding(
-                        padding: EdgeInsets.fromLTRB(0, 0, 0, 35),
-                        child: Text('Ingresar',
-                            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                            textAlign: TextAlign.center)
-                    ),
-                    // showLogo(),
-                    showEmailInput(),
-                    showPasswordInput(),
-                    showPrimaryButton(),
-                    showErrorMessage(),
-                  ],
-                ),
-              )
-          )
-        ],
-      ),
-    );
-
-//    return Container(
-//
-//      child: Card(
-//        margin: const EdgeInsets.all(40),
-//        // This ensures that the Card's children (including the ink splash) are clipped correctly.
-//        clipBehavior: Clip.antiAlias,
-//        child: Padding(
-//            padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-//            child: Column(
-//                children: <Widget>[
-//                  Container(
-//                      padding: EdgeInsets.all(16.0),
-//                      child: new Form(
-//                        key: _formKey,
-//                        child: new ListView(
-//                          shrinkWrap: true,
-//                          children: <Widget>[
-//                            // showLogo(),
-//                            showEmailInput(),
-//                            showPasswordInput(),
-//                            showPrimaryButton(),
-//                            showErrorMessage(),
-//                        ],
-//                      ),
-//                    )
-//                  )
-//                ],
-//            ),
-//        ),
-//      )
-//    );
-  }
-
-  Widget showErrorMessage() {
-    if (_errorMessage.length > 0 && _errorMessage != null) {
-      return new Text(
-        _errorMessage,
-        style: TextStyle(
-            fontSize: 13.0,
-            color: Colors.red,
-            height: 1.0,
-            fontWeight: FontWeight.w300),
-      );
-    } else {
-      return new Container(
-        height: 0.0,
-      );
-    }
-  }
-
-  Widget showLogo() {
-    return new Hero(
-      tag: 'hero',
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(0, 64, 0, 20),
-        child: CircleAvatar(
-          backgroundColor: Colors.transparent,
-          radius: 48.0,
-          child: Image.asset('assets/my-apps.png', width: 90, height: 90),
-        ),
-      ),
-    );
-  }
-
-  Widget showEmailInput() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: new TextFormField(
-        maxLines: 1,
-        keyboardType: TextInputType.text,
-        autofocus: false,
-        decoration: new InputDecoration(
-          border: const OutlineInputBorder(),
-          labelText: 'Usuario',
-        ),
-        validator: (value) {
-          return value.isEmpty ? 'Debe ingresar su nombre de usuario.' : null;
-        },
-        onSaved: (value) => _username = value.trim(),
-      ),
-    );
-  }
-
-  Widget showPasswordInput() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
-      child: TextFormField(
-        maxLines: 1,
-        obscureText: _obscureText,
-        autofocus: false,
-        decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            labelText: 'Contraseña',
-            suffixIcon: IconButton(
-                icon: Icon(
-                    _obscureText ? Icons.visibility_off : Icons.visibility),
-                color: Colors.grey,
-                onPressed: () => showHidePassword())),
-        validator: (value) {
-          return value.isEmpty ? 'Debe ingresar su contraseña.' : null;
-        },
-        onSaved: (value) => _password = value.trim(),
-      ),
-    );
-  }
-
-  Widget showPrimaryButton() {
-    return new Padding(
-        padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
-        child: SizedBox(
-          height: 55.0,
-          child: new RaisedButton(
-            elevation: 5.0,
-            shape: new RoundedRectangleBorder(
-                borderRadius: new BorderRadius.circular(30.0)),
-            color: Color(colorPrimary),
-            child: new Text('Iniciar sesión',
-                style: new TextStyle(color: Colors.white)),
-            onPressed: () => validateAndSubmit(),
-          ),
-        ));
-  }
-
-  Future login() async {
-    try {
-      final response = await vehicleRepository.login(_username, _password);
-      print(response);
-      return response;
-    } catch (e) {
-      print(e);
-    }
-  }
-
   /* Returns true if code is in the range [200...300]*/
   bool isSuccessful(response) {
     return response >= 200 && response <= 300;
+  }
+
+  @override
+  void initState() {
+    _isLoading = false;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                colors: [
+                  colorPrimaryMap[800],
+                  colorPrimaryMap[700],
+                  colorPrimaryMap[400]
+                ]
+            )
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: 80),
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text("Iniciar sesión", style: TextStyle(color: Colors.white, fontSize: 40),),
+                  SizedBox(height: 10),
+                  Text("Bienvenido de nuevo", style: TextStyle(color: Colors.white, fontSize: 18),),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(60), topRight: Radius.circular(60))
+                ),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.all(30),
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(height: 60,),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              boxShadow: [BoxShadow(
+                                  color: Color.fromRGBO(6, 55, 122, .3),
+                                  blurRadius: 20,
+                                  offset: Offset(0, 10)
+                              )]
+                          ),
+                          child: Form(
+                              key: _formKey,
+                              child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        border: Border(bottom: BorderSide(color: Colors.grey[200]))
+                                    ),
+                                    child: TextFormField(
+                                      decoration: InputDecoration(
+                                          hintText: "Usuario",
+                                          hintStyle: TextStyle(color: Colors.grey),
+                                          border: InputBorder.none
+                                      ),
+                                      validator: (value) {
+                                        return value.isEmpty ? 'Debe ingresar su nombre de usuario.' : null;
+                                      },
+                                      onSaved: (value) => _username = value.trim(),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                        border: Border(bottom: BorderSide(color: Colors.grey[200]))
+                                    ),
+                                    child: TextFormField(
+                                      obscureText: _obscureText,
+                                      decoration: InputDecoration(
+                                          hintText: "Contraseña",
+                                          hintStyle: TextStyle(color: Colors.grey),
+                                          border: InputBorder.none,
+                                          suffixIcon: IconButton(
+                                              icon: Icon(
+                                                  _obscureText ? Icons.visibility_off : Icons.visibility
+                                              ),
+                                              color: Colors.grey,
+                                              onPressed: showHidePassword
+                                          )
+                                      ),
+                                      validator: (value) {
+                                        return value.isEmpty ? 'Debe ingresar su contraseña.' : null;
+                                      },
+                                      onSaved: (value) => _password = value.trim(),
+                                    ),
+                                  ),
+                                ],
+                              )
+                          ),
+                        ),
+                        _showCircularProgress(),
+                        SizedBox(height: 40,),
+                        Container(
+                          height: 50,
+                          margin: EdgeInsets.symmetric(horizontal: 50),
+                          child: RaisedButton(
+                            elevation: 5.0,
+                            color: Color(colorPrimary),
+                            padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                            child: Text('Iniciar sesión', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            onPressed: validateAndSubmit
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
 }

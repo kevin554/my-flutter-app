@@ -1,9 +1,8 @@
 import 'dart:collection';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:myapps/networking/VehicleRepository.dart';
+import 'package:myapps/networking/ApiRepository.dart';
 
 
 class AddVehiclePage extends StatefulWidget {
@@ -22,7 +21,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
   var _vehicleObj;
   var index;
 
-  VehicleRepository vehicleRepository = VehicleRepository();
+  ApiRepository apiRepository = ApiRepository();
   final _formKey = new GlobalKey<FormState>();
 
   String _brand;
@@ -38,7 +37,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
 
   @override
   void initState() {
-    _images.add({});
+    _images.add({'documento_id': 0});
 
     fetchCities();
     fetchClasses();
@@ -75,6 +74,10 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
       if (selectedType == null) {
         selectedType = _vehicleObj['tipo_vehiculo_id'].toString();
       }
+
+      if (_images.length == 1) {
+        _images.insertAll(0, _vehicleObj['listDocumentos']);
+      }
     }
 
     return new Scaffold(
@@ -97,9 +100,9 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
   }
 
   void validateAndSubmit() async {
-    if (!_formKey.currentState.validate()) {
-      return;
-    }
+//    if (!_formKey.currentState.validate()) {
+//      return;
+//    }
 
     _formKey.currentState.save();
 
@@ -406,7 +409,12 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
       return Image(image:AssetImage('assets/add-black.png'), width: 90, height: 90);
     }
 
-    return Image.file(_images[index], width: 90, height: 90);
+    var id = _images[index]['documento_id'];
+    if (id != null && id > 0) {
+      return Image.network(apiRepository.getFile(id));
+    }
+
+    return Image.file(_images[index]['path'], width: 90, height: 90);
   }
 
   removeImage(index) {
@@ -420,7 +428,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
 
     if (image != null) {
       setState(() {
-        _images.insert(0, image);
+        _images.insert(0, {'path': image});
       });
     }
   }
@@ -428,10 +436,27 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
   Future saveVehicle() async {
     int id = _vehicleObj != null ? _vehicleObj['vehiculo_id'] : 0;
 
+    var currentImages = List();
+    var newImages = List();
+    for (final image in _images) {
+      if (image['path'] != null) {
+        newImages.add(image['path']);
+      }
+
+      if (image['documento_id'] != null && image['documento_id'] > 0) {
+        currentImages.add(image['documento_id']);
+      }
+    }
+
+    if (currentImages.isEmpty) {
+      currentImages.add(0);
+    }
+
     try {
-      final response = await vehicleRepository.saveVehicle(id, _brand,
+      final response = await apiRepository.saveVehicle(id, _brand,
           _licensePlate, _model, _color, int.parse(selectedClass),
-          int.parse(selectedCity), int.parse(selectedType));
+          int.parse(selectedCity), int.parse(selectedType), newImages,
+          currentImages);
       print(response);
       return response;
     } catch (e) {
@@ -441,7 +466,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
 
   Future fetchCities() async {
     try {
-      final response = await vehicleRepository.fetchCities();
+      final response = await apiRepository.fetchCities();
 
       setState(() {
         citiesList = response['data'];
@@ -453,7 +478,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
 
   Future fetchTypes() async {
     try {
-      final response = await vehicleRepository.fetchTypes();
+      final response = await apiRepository.fetchTypes();
 
       setState(() {
         typesList = response['data'];
@@ -465,7 +490,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
 
   Future fetchClasses() async {
     try {
-      final response = await vehicleRepository.fetchClasses();
+      final response = await apiRepository.fetchClasses();
 
       setState(() {
         classesList = response['data'];

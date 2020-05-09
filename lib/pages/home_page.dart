@@ -1,20 +1,21 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:myapps/pages/first_fragment.dart';
 import 'package:myapps/pages/vehicles_fragment.dart';
 import 'package:myapps/shared_preferences_helper.dart';
 
+
 class HomePage extends StatefulWidget {
 
   final drawerItems = [
     new DrawerItem("Fragment 1", Icons.rss_feed),
-    new DrawerItem("Vehículos", Icons.local_pizza),
-    new DrawerItem("Fragment 3", Icons.info)
+    new DrawerItem("Vehículos", Icons.directions_car),
+    new DrawerItem("Cerrar sesión", Icons.exit_to_app)
   ];
 
-  HomePage({Key key, this.userId, this.logoutCallback})
+  HomePage({Key key, this.logoutCallback})
       : super(key: key);
 
-  final String userId;
   final VoidCallback logoutCallback;
 
   @override
@@ -23,19 +24,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-  final _textEditingController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  int _selectedDrawerIndex = 0;
+  var user;
 
   signOut() async {
     try {
@@ -46,47 +38,59 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  showAddTodoDialog(BuildContext context) async {
-    _textEditingController.clear();
-    await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: new Row(
-              children: <Widget>[
-                new Expanded(
-                    child: new TextField(
-                      controller: _textEditingController,
-                      autofocus: true,
-                      decoration: new InputDecoration(
-                        labelText: 'Add new todo',
-                      ),
-                    ))
-              ],
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  }),
-              new FlatButton(
-                  child: const Text('Save'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  })
-            ],
-          );
-        });
+  _onSelectItem(int index) {
+    if (index == widget.drawerItems.length - 1) { /* the last one */
+      signOut();
+      return;
+    }
+
+    setState(() => _selectedDrawerIndex = index);
+    Navigator.of(context).pop(); // close the drawer
   }
 
-  Widget showTodoList() {
-    return Center(
-        child: Text(
-          "Welcome. Your list is empty",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 30.0),
-        ));
+  _getDrawerItemWidget(int pos) {
+    switch (pos) {
+      case 0:
+        return new FirstFragment();
+      case 1:
+        return new VehiclesFragment();
+      case 2:
+
+      default:
+        return new Text("Error");
+    }
+  }
+
+  loadUserData() async {
+    final user = await SharedPreferencesHelper.getUser();
+
+    setState(() {
+      this.user = user;
+    });
+  }
+
+  @override
+  void initState() {
+    loadUserData();
+
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");// message: {notification: {title: '', body: ''}, data: {}}
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+      },
+    );
+
+    _firebaseMessaging.getToken().then((String token) {
+      assert(token != null);
+      print("Push Messaging token: $token");
+    });
+
+    super.initState();
   }
 
   @override
@@ -103,106 +107,30 @@ class _HomePageState extends State<HomePage> {
           )
       );
     }
-//
-//    return new Scaffold(
-//      appBar: new AppBar(
-//        // here we display the title corresponding to the fragment
-//        // you can instead choose to have a static title
-//        title: new Text(widget.drawerItems[_selectedDrawerIndex].title),
-//      ),
-//      drawer: new Drawer(
-//        child: new Column(
-//          children: <Widget>[
-//            new UserAccountsDrawerHeader(
-//                accountName: new Text("John Doe"), accountEmail: null),
-//            new Column(children: drawerOptions)
-//          ],
-//        ),
-//      ),
-//      body: _getDrawerItemWidget(_selectedDrawerIndex),
-//    );
+
+    var username = user != null ? user['Usuario'] : '';
+    var email = user != null ? user['Email'] : '';
 
     return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('App informativa'),
-          actions: <Widget>[
-            new FlatButton(
-                child: new Text('Logout',
-                    style: new TextStyle(fontSize: 17.0, color: Colors.white)),
-                onPressed: signOut)
-          ],
-        ),
-        drawer: new Drawer(
-          child: new Column(
+      appBar: AppBar(title: Text('App informativa')),
+      drawer: Drawer(
+          child: Column(
             children: <Widget>[
-              new UserAccountsDrawerHeader(accountName: new Text("John Doe"), accountEmail: null),
-              new Column(children: drawerOptions)
+              UserAccountsDrawerHeader(
+                  accountName: Text(username),
+                  accountEmail: Text(email),
+//                  currentAccountPicture: CircleAvatar(
+//                    backgroundColor: Colors.transparent,
+//                    radius: 48.0,
+//                    child: Image.asset('assets/my-apps.png', width: 90, height: 90)
+//                  )
+              ),
+              Column(children: drawerOptions)
             ],
           )
-        ),
-//        drawer: Drawer(
-//          child: ListView(
-//            padding: EdgeInsets.zero,
-//            children: <Widget>[
-//              DrawerHeader(
-//                decoration: BoxDecoration(
-//                  color: Colors.blue,
-//                ),
-//                child: Text(
-//                  'Drawer header',
-//                  style: TextStyle(
-//                    color: Colors.white,
-//                    fontSize: 24,
-//                  )
-//                )
-//              ),
-//              ListTile(
-//                leading: Icon(Icons.message),
-//                title: Text('Messages'),
-//                onTap: () {
-//                  // change app state...
-//                  Navigator.pop(context); // close the drawer
-//                },
-//              ),
-//              ListTile(
-//                leading: Icon(Icons.account_circle),
-//                title: Text('Profile'),
-//              ),
-//              ListTile(
-//                leading: Icon(Icons.settings),
-//                title: Text('Settings'),
-//              )
-//            ],
-//          ),
-//        ),
-        body: _getDrawerItemWidget(_selectedDrawerIndex), // showTodoList(),
-//        floatingActionButton: FloatingActionButton(
-//          onPressed: () {
-//            showAddTodoDialog(context);
-//          },
-//          tooltip: 'Increment',
-//          child: Icon(Icons.add),
-        // )
+      ),
+      body: _getDrawerItemWidget(_selectedDrawerIndex),
     );
-  }
-
-  _onSelectItem(int index) {
-    setState(() => _selectedDrawerIndex = index);
-    Navigator.of(context).pop(); // close the drawer
-  }
-  int _selectedDrawerIndex = 0;
-  _getDrawerItemWidget(int pos) {
-    switch (pos) {
-      case 0:
-        return new FirstFragment();
-      case 1:
-        return new VehiclesFragment();
-      case 2:
-        // return new ThirdFragment();
-
-      default:
-        return new Text("Error");
-    }
   }
 
 }

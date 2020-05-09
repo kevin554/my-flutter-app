@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:myapps/constants.dart';
 import 'package:myapps/networking/ApiProvider.dart';
 
-
-class VehicleRepository {
+class ApiRepository {
   ApiProvider _provider = ApiProvider();
 
   Future fetchVehicles() async {
@@ -26,9 +27,16 @@ class VehicleRepository {
     final response = await _provider.get(urlServices + 'consultas/v1/vehicle_classes');
     return response;
   }
+// TODO: send images to the server
+  Future saveVehicle(id, brand, licensePlate, model, color, classId, cityId, typeId, newImages, currentImages) async {
+    var newImagesParam = [newImages.length];
+    for (int i = 0; i < newImages.length; i++) {
+      var image = newImages[i];
 
-  Future saveVehicle(id, brand, licensePlate, model, color, classId, cityId,
-      typeId) async {
+      var partFile = MultipartFile.fromFileSync(image.path, filename: '6789123423.png');
+      newImagesParam[i] = partFile;
+    }
+
     var params = new Map<String, dynamic>();
     params['vehiculo_id'] = id;
     params['marca'] = brand;
@@ -38,9 +46,25 @@ class VehicleRepository {
     params['clase_vehiculo_id'] = classId;
     params['ciudad_id'] = cityId;
     params['tipo_vehiculo_id'] = typeId;
-    params['imagenes'] = '[0]';
+    params['nuevas_imagenes'] = [MultipartFile.fromFileSync(newImages[0].path, filename: '6789123423.png')];
+    params['imagenes'] = json.encode(currentImages);
 
-    final response = await _provider.dioPost(urlServices + 'consultas/v1/save_vehicle', params);
+    var formData = {
+      'vehiculo_id': id,
+      'marca': brand,
+      'placa': licensePlate,
+      'modelo': model,
+      'color': color,
+      'clase_vehiculo_id': classId,
+      'ciudad_id': cityId,
+      'tipo_vehiculo_id': typeId,
+      'nuevas_imagenes': [
+        MultipartFile.fromFileSync(newImages[0].path, filename: '6789123423.png')
+      ],
+      'imagenes': '[0]'
+    };
+
+    final response = await _provider.dioPost2(urlServices + 'consultas/v1/save_vehicle', formData);
     return response;
   }
 
@@ -52,6 +76,10 @@ class VehicleRepository {
 
     final response = await _provider.post(urlAuth + 'rest/api/auth/login', body);
     return response;
+  }
+
+  String getFile(id) {
+    return urlAuth + "auth/login/servlet?id=$id";
   }
 
 }

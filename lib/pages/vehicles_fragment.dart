@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myapps/constants.dart';
-import 'package:myapps/networking/VehicleRepository.dart';
+import 'package:myapps/networking/ApiRepository.dart';
 
 
 class VehiclesFragment extends StatefulWidget {
@@ -16,7 +16,7 @@ class VehiclesFragment extends StatefulWidget {
 
 class _VehiclesFragment extends State<VehiclesFragment> {
 
-  VehicleRepository vehicleRepository = VehicleRepository();
+  ApiRepository vehicleRepository = ApiRepository();
   var _vehiclesList = new List();
 
   @override
@@ -36,7 +36,8 @@ class _VehiclesFragment extends State<VehiclesFragment> {
           },
           tooltip: 'Agregar vehículo',
           child: Icon(Icons.add),
-        ));
+        )
+    );
   }
 
   Widget showVehiclesList() {

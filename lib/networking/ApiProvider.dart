@@ -49,6 +49,21 @@ class ApiProvider {
     return responseJson;
   }
 
+  Future<dynamic> dioPost2(String url, params) async {
+    var responseJson;
+    var dio = Dio();
+    FormData formData = FormData.fromMap(params);
+
+    try {
+      final response = await dio.post(url, data: formData);
+      responseJson = _dioResponse(response);
+    } on SocketException {
+      throw FetchDataException('No Internet connection');
+    }
+
+    return responseJson;
+  }
+
   dynamic _response(/*http.Response */response) {
     switch (response.statusCode) {
       case 200:

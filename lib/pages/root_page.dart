@@ -1,4 +1,3 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:myapps/pages/home_page.dart';
 import 'package:myapps/pages/login.dart';
@@ -24,30 +23,10 @@ class RootPage extends StatefulWidget {
 class _RootPageState extends State<RootPage> {
 
   AuthStatus authStatus = AuthStatus.NOT_DETERMINED;
-  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   @override
   void initState() {
     super.initState();
-
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");// message: {notification: {title: '', body: ''}, data: {}}
-      },
-//      onBackgroundMessage: myBackgroundMessageHandler,
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
-      },
-    );
-
-    _firebaseMessaging.getToken().then((String token) {
-      assert(token != null);
-      print("Push Messaging token: $token");
-    });
-
     checkLogin();
   }
 
@@ -58,21 +37,6 @@ class _RootPageState extends State<RootPage> {
       authStatus = user != null ? AuthStatus.LOGGED_IN : AuthStatus.NOT_LOGGED_IN;
     });
   }
-
-//  myBackgroundMessageHandler(Map<String, dynamic> message) {
-//    print("_backgroundMessageHandler");
-//    if (message.containsKey('data')) {
-//      // Handle data message
-//      final dynamic data = message['data'];
-//      print("_backgroundMessageHandler data: ${data}");
-//    }
-//
-//    if (message.containsKey('notification')) {
-//      // Handle notification message
-//      final dynamic notification = message['notification'];
-//      print("_backgroundMessageHandler notification: ${notification}");
-//    }
-//  }
 
   void loginCallback() {
     setState(() {
@@ -119,19 +83,5 @@ class _RootPageState extends State<RootPage> {
         break;
     }
   }
-
-//  myBackgroundMessageHandler(Map<String, dynamic> message) {
-//    if (message.containsKey('data')) {
-//      // Handle data message
-//      final dynamic data = message['data'];
-//    }
-//
-//    if (message.containsKey('notification')) {
-//      // Handle notification message
-//      final dynamic notification = message['notification'];
-//    }
-//
-//    // Or do other work.
-//  }
 
 }
