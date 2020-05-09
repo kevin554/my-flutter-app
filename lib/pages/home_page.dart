@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   signOut() async {
     try {
       await SharedPreferencesHelper.saveUser(null);
+      await _firebaseMessaging.deleteInstanceID();
       widget.logoutCallback();
     } catch (e) {
       print(e);
@@ -85,9 +86,8 @@ class _HomePageState extends State<HomePage> {
       },
     );
 
-    _firebaseMessaging.getToken().then((String token) {
-      assert(token != null);
-      print("Push Messaging token: $token");
+    _firebaseMessaging.onTokenRefresh.listen((newToken) {
+      print("On token refresh: $newToken");
     });
 
     super.initState();

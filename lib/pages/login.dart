@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:myapps/constants.dart';
 import 'package:myapps/networking/ApiRepository.dart';
@@ -15,6 +16,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final _formKey = new GlobalKey<FormState>();
   ApiRepository apiRepository = ApiRepository();
 
@@ -51,6 +53,11 @@ class _LoginPageState extends State<LoginPage> {
       await SharedPreferencesHelper.saveUser(user);
 
       widget.loginCallback();
+      _firebaseMessaging.getToken().then((String token) {
+        if (token != null) {
+          print("Push Messaging token: $token");
+        }
+      });
     }
   }
 
